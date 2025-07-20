@@ -56,54 +56,40 @@ const Constellation = () => {
     generateStars();
   }, []);
 
-  // Define constellations with real constellation patterns
-  // Replace Google Drive URLs with your actual shared image URLs
-  const constellations: Constellation[] = [
-    {
-      id: 1,
-      name: "Our Love Story",
-      memory: "The day we first met under the stars",
-      image: "https://drive.google.com/uc?export=view&id=YOUR_GOOGLE_DRIVE_FILE_ID_1", // Replace with your Google Drive file ID
-      stars: [
-        { id: 1, x: 20, y: 25, constellationId: 1 },
-        { id: 2, x: 25, y: 20, constellationId: 1 },
-        { id: 3, x: 30, y: 22, constellationId: 1 },
-        { id: 4, x: 35, y: 28, constellationId: 1 },
-        { id: 5, x: 28, y: 30, constellationId: 1 },
-      ],
-      connections: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 1]], // Heart-like shape
-    },
-    {
-      id: 2,
-      name: "Forever Together",
-      memory: "Our first vacation together",
-      image: "https://drive.google.com/uc?export=view&id=YOUR_GOOGLE_DRIVE_FILE_ID_2", // Replace with your Google Drive file ID
-      stars: [
-        { id: 6, x: 65, y: 15, constellationId: 2 },
-        { id: 7, x: 70, y: 18, constellationId: 2 },
-        { id: 8, x: 75, y: 15, constellationId: 2 },
-        { id: 9, x: 72, y: 25, constellationId: 2 },
-      ],
-      connections: [[6, 7], [7, 8], [7, 9]], // Simple constellation
-    },
-    {
-      id: 3,
-      name: "Infinite Dreams",
-      memory: "The night you said yes",
-      image: "https://drive.google.com/uc?export=view&id=YOUR_GOOGLE_DRIVE_FILE_ID_3", // Replace with your Google Drive file ID
-      stars: [
-        { id: 10, x: 45, y: 60, constellationId: 3 },
-        { id: 11, x: 50, y: 55, constellationId: 3 },
-        { id: 12, x: 55, y: 60, constellationId: 3 },
-        { id: 13, x: 50, y: 65, constellationId: 3 },
-        { id: 14, x: 45, y: 70, constellationId: 3 },
-        { id: 15, x: 55, y: 70, constellationId: 3 },
-      ],
-      connections: [[10, 11], [11, 12], [11, 13], [13, 14], [13, 15]], // Crown-like shape
-    },
-  ];
+  // Single large constellation spanning across the sky
+  // Replace Google Drive URL with your actual shared image URL
+  const constellation: Constellation = {
+    id: 1,
+    name: "Our Love Constellation",
+    memory: "Every star tells our story, connected across the infinite sky of our love",
+    image: "https://drive.google.com/uc?export=view&id=YOUR_GOOGLE_DRIVE_FILE_ID", // Replace with your Google Drive file ID
+    stars: [
+      // Creating a large, beautiful constellation pattern
+      { id: 1, x: 25, y: 20, constellationId: 1 },   // Top left
+      { id: 2, x: 35, y: 15, constellationId: 1 },   // Top center
+      { id: 3, x: 50, y: 18, constellationId: 1 },   // Top right
+      { id: 4, x: 65, y: 25, constellationId: 1 },   // Right
+      { id: 5, x: 70, y: 40, constellationId: 1 },   // Right center
+      { id: 6, x: 75, y: 55, constellationId: 1 },   // Bottom right
+      { id: 7, x: 60, y: 70, constellationId: 1 },   // Bottom right
+      { id: 8, x: 45, y: 75, constellationId: 1 },   // Bottom center
+      { id: 9, x: 30, y: 70, constellationId: 1 },   // Bottom left
+      { id: 10, x: 20, y: 55, constellationId: 1 },  // Left bottom
+      { id: 11, x: 15, y: 40, constellationId: 1 },  // Left center
+      { id: 12, x: 40, y: 35, constellationId: 1 },  // Center
+      { id: 13, x: 55, y: 45, constellationId: 1 },  // Center right
+      { id: 14, x: 35, y: 50, constellationId: 1 },  // Center left
+    ],
+    connections: [
+      // Creating a beautiful interconnected pattern
+      [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 1], // Outer ring
+      [2, 12], [4, 13], [8, 12], [10, 14], // Inner connections
+      [12, 13], [13, 14], [14, 12], // Inner triangle
+      [1, 12], [3, 13], [7, 12], [9, 14], // Spokes
+    ],
+  };
 
-  const allConstellationStars = constellations.flatMap(c => c.stars);
+  const allConstellationStars = constellation.stars;
 
   return (
     <div className="min-h-screen bg-space pt-20 px-4">
@@ -148,8 +134,7 @@ const Constellation = () => {
 
           {/* Constellation Stars - Clickable and highlighted */}
           {allConstellationStars.map((star) => {
-            const constellation = constellations.find(c => c.id === star.constellationId);
-            const isSelected = selectedConstellation === star.constellationId;
+            const isSelected = selectedConstellation === constellation.id;
             
             return (
               <button
@@ -170,103 +155,86 @@ const Constellation = () => {
                     : '0 0 10px hsl(var(--primary) / 0.6)',
                 }}
                 onClick={() => setSelectedConstellation(
-                  selectedConstellation === star.constellationId ? null : star.constellationId
+                  selectedConstellation === constellation.id ? null : constellation.id
                 )}
-                title={constellation?.name}
+                title={constellation.name}
               />
             );
           })}
 
           {/* Constellation Connection Lines */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none z-5">
-            {constellations.map((constellation) => {
+            {constellation.connections.map(([startId, endId], index) => {
               const isSelected = selectedConstellation === constellation.id;
+              const startStar = constellation.stars.find(s => s.id === startId);
+              const endStar = constellation.stars.find(s => s.id === endId);
               
-              return constellation.connections.map(([startId, endId], index) => {
-                const startStar = constellation.stars.find(s => s.id === startId);
-                const endStar = constellation.stars.find(s => s.id === endId);
-                
-                if (!startStar || !endStar) return null;
-                
-                return (
-                  <line
-                    key={`line-${constellation.id}-${index}`}
-                    x1={`${startStar.x}%`}
-                    y1={`${startStar.y}%`}
-                    x2={`${endStar.x}%`}
-                    y2={`${endStar.y}%`}
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={isSelected ? "2" : "1"}
-                    opacity={isSelected ? "0.8" : "0.3"}
-                    className="transition-all duration-300"
-                    style={{
-                      filter: isSelected ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
-                    }}
-                  />
-                );
-              });
+              if (!startStar || !endStar) return null;
+              
+              return (
+                <line
+                  key={`line-${constellation.id}-${index}`}
+                  x1={`${startStar.x}%`}
+                  y1={`${startStar.y}%`}
+                  x2={`${endStar.x}%`}
+                  y2={`${endStar.y}%`}
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={isSelected ? "2" : "1"}
+                  opacity={isSelected ? "0.8" : "0.3"}
+                  className="transition-all duration-300"
+                  style={{
+                    filter: isSelected ? 'drop-shadow(0 0 8px hsl(var(--primary) / 0.6))' : 'none'
+                  }}
+                />
+              );
             })}
           </svg>
 
-          {/* Constellation Labels */}
-          {constellations.map((constellation) => {
-            const centerX = constellation.stars.reduce((sum, star) => sum + star.x, 0) / constellation.stars.length;
-            const centerY = constellation.stars.reduce((sum, star) => sum + star.y, 0) / constellation.stars.length;
-            const isSelected = selectedConstellation === constellation.id;
-            
-            return (
-              <div
-                key={`label-${constellation.id}`}
-                className={`absolute pointer-events-none transition-all duration-300 ${
-                  isSelected ? 'opacity-100 scale-110' : 'opacity-60'
-                }`}
-                style={{
-                  left: `${centerX}%`,
-                  top: `${centerY - 8}%`,
-                  transform: 'translate(-50%, -50%)',
-                }}
-              >
-                <span className={`text-xs font-semibold aurora-text ${
-                  isSelected ? 'text-primary' : 'text-foreground/80'
-                }`}>
-                  {constellation.name}
-                </span>
-              </div>
-            );
-          })}
+          {/* Constellation Label */}
+          <div
+            className={`absolute pointer-events-none transition-all duration-300 ${
+              selectedConstellation === constellation.id ? 'opacity-100 scale-110' : 'opacity-60'
+            }`}
+            style={{
+              left: `${constellation.stars.reduce((sum, star) => sum + star.x, 0) / constellation.stars.length}%`,
+              top: `${constellation.stars.reduce((sum, star) => sum + star.y, 0) / constellation.stars.length - 8}%`,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <span className={`text-sm font-semibold aurora-text ${
+              selectedConstellation === constellation.id ? 'text-primary' : 'text-foreground/80'
+            }`}>
+              {constellation.name}
+            </span>
+          </div>
         </div>
 
         {/* Memory Display */}
         {selectedConstellation && (
           <Card className="mt-8 p-6 bg-card/80 backdrop-blur-sm border-primary/20">
-            {(() => {
-              const constellation = constellations.find(c => c.id === selectedConstellation);
-              return constellation ? (
-                <div className="flex flex-col md:flex-row gap-6 items-center">
-                  <img 
-                    src={constellation.image} 
-                    alt={constellation.memory}
-                    className="w-full md:w-64 h-48 object-cover rounded-lg"
-                    onError={(e) => {
-                      // Fallback if Google Drive image fails
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400";
-                    }}
-                  />
-                  <div className="flex-1">
-                    <h3 className="aurora-text text-2xl font-semibold mb-3">
-                      {constellation.name}
-                    </h3>
-                    <p className="text-lg text-foreground mb-3">
-                      {constellation.memory}
-                    </p>
-                    <p className="text-muted-foreground leading-relaxed">
-                      This constellation holds a special place in our heart, forever etched 
-                      among the nordic stars that witnessed our love story unfold.
-                    </p>
-                  </div>
-                </div>
-              ) : null;
-            })()}
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <img 
+                src={constellation.image} 
+                alt={constellation.memory}
+                className="w-full md:w-64 h-48 object-cover rounded-lg"
+                onError={(e) => {
+                  // Fallback if Google Drive image fails
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400";
+                }}
+              />
+              <div className="flex-1">
+                <h3 className="aurora-text text-2xl font-semibold mb-3">
+                  {constellation.name}
+                </h3>
+                <p className="text-lg text-foreground mb-3">
+                  {constellation.memory}
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  This constellation holds a special place in our heart, forever etched 
+                  among the nordic stars that witnessed our love story unfold.
+                </p>
+              </div>
+            </div>
           </Card>
         )}
 
